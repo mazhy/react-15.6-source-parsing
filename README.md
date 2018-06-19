@@ -7,8 +7,8 @@
 
 生命周期只存在于自定义组件中
 
-
-1.jsx创建的虚拟元素会被编译成React的createElement方法
+# 渲染流程
+## 1.jsx创建的虚拟元素会被编译成React的createElement方法
 ```javascript
 var ReactElement = function(type, key, ref, self, source, owner, props) {
   var element = {
@@ -79,12 +79,12 @@ ReactElement.createElement = function(type, config, children) {
 ```
 ##  2.创建组件
   使用React创建组件,会先调用instantiateReactComponent, 这是初始化组件的入口,通过判断参数node的类型来区分创建什么类型的组件
-  1.当node为空时,说明node不存在,则初始化一个空的组件. ReactEmptyComponent.create(instantiateReactComponent)。
-  2.当node类型为对象时,那么就是DOM标签组件或者说是自定义组件,
+  1. 当node为空时,说明node不存在,则初始化一个空的组件. ReactEmptyComponent.create(instantiateReactComponent)。
+  2. 当node类型为对象时,那么就是DOM标签组件或者说是自定义组件,
   	如果element类型(element = node,element.type='string')为字符串,就会初始化一个dom标签组件:ReactNativeComponent.createInternalComponent(element)，
   	否则就会初始化一个自定义组件 ReactCompositeComponentWrapper()
-  3.当node类型为字符串或者数字时,则初始化文本组件,ReactNativeComponent.createInstanceForText(node)。
-  4.其余情况不做处理
+  3. 当node类型为字符串或者数字时,则初始化文本组件,ReactNativeComponent.createInstanceForText(node)。
+  4. 其余情况不做处理
 ```javascript
 //初始化组件的入口:已删除不在主线路线的代码
 function instantiateReactComponent(node, shouldHaveDebugID) {
@@ -117,10 +117,10 @@ function instantiateReactComponent(node, shouldHaveDebugID) {
 }
 ```
 
-2.1文本组件
-1根据transaction.useCreateElement判断文本是不是通过createElement创建的节点
-2.是,则为这个节点创建标签和标识domID就可以参与虚拟dom的diff
-3.如果不是就直接返回文本
+### 2.1文本组件
+1. 根据transaction.useCreateElement判断文本是不是通过createElement创建的节点
+2. 是,则为这个节点创建标签和标识domID就可以参与虚拟dom的diff
+3. 如果不是就直接返回文本
 
 
 ```javascript
@@ -197,8 +197,7 @@ Object.assign(ReactDOMTextComponent.prototype, {
   },
 });
 ```
-3 DOM标签组件
-1.虚拟dom涵盖了原生的DOM标签,使用的<div>不是原<div>,他是一个虚拟dom对象,标签名相同
-2.属性更新:更新样式,更新属性,处理事件
-
-3.子节点更新:更新内容,更新子节点,
+### 2.2 DOM标签组件
+1. 虚拟dom涵盖了原生的DOM标签,使用div不是原div,他是一个虚拟dom对象,标签名相同
+2. 属性更新:更新样式,更新属性,处理事件
+3. 子节点更新:更新内容,更新子节点,
