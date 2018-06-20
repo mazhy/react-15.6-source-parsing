@@ -38,9 +38,11 @@ var CompositeTypes = {
   StatelessFunctional: 2,
 };
 
+//无状态组件只有一个render方法
 function StatelessComponent(Component) {}
 StatelessComponent.prototype.render = function() {
   var Component = ReactInstanceMap.get(this)._currentElement.type;
+  //没有state状态
   var element = Component(this.props, this.context, this.updater);
   return element;
 };

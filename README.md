@@ -846,8 +846,20 @@ mixin，设置初始化 defaultProps，返回构造函数。
   },
 ```
 
-
-
+#### 无状态组件
+---
+1.  无状态组件只有一个render方法,并没有组件类的实例化过程,也没有实例返回
+2.  无状态组件没有状态,没有生命周期,就是接受props渲染生成dom结构是一个纯粹为渲染而生的组件,
+```javascript
+//无状态组件只有一个render方法
+function StatelessComponent(Component) {}
+StatelessComponent.prototype.render = function() {
+  var Component = ReactInstanceMap.get(this)._currentElement.type;
+  //没有state状态
+  var element = Component(this.props, this.context, this.updater);
+  return element;
+};
+```
 
 
 
