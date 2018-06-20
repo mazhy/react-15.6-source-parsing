@@ -651,6 +651,13 @@ ReactDOMComponent.Mixin = {
    * @param {object} props
    * @return {string} Markup of opening tag.
    */
+  /**
+   * 在mountComponent中通过这个方法处理DOM节点的属性和时间
+   * 1  如果存在事件,则针对当前的节点添加事件代理,既调用enqueuePutListener(this, propKey, propValue, transaction);
+   * 2  如果存在样式,首先会对样式进行合并,Object.assign({},props.style,);然后通过CSSPropertyOperations.createMarkupForStyles( propValue,this,)创建样式
+   * 3  通过DOMPropertyOperations.createMarkupForProperty(propKey,propValue,);创建属性
+   * 4  通过DOMPropertyOperations.createMarkupForID(this._domID)创建唯一标识
+   */
   _createOpenTagMarkupAndPutListeners: function(transaction, props) {
     var ret = '<' + this._currentElement.type;
     //for in + hasOwnProperty组合,for in会迭代原型链,hasOwnProperty只是该对象
@@ -672,16 +679,10 @@ ReactDOMComponent.Mixin = {
         if (propKey === STYLE) {
           if (propValue) {
             //如果有样式,合并样式
-            propValue = this._previousStyleCopy = Object.assign(
-              {},
-              props.style,
-            );
+            propValue = this._previousStyleCopy = Object.assign({},props.style,);
           }
           //创建样式
-          propValue = CSSPropertyOperations.createMarkupForStyles(
-            propValue,
-            this,
-          );
+          propValue = CSSPropertyOperations.createMarkupForStyles( propValue,this,);
         }
         //创建属性标识
         var markup = null;
@@ -865,6 +866,20 @@ ReactDOMComponent.Mixin = {
    * @param {object} nextProps
    * @param {?DOMElement} node
    */
+  /**
+   * 先是删除不需要的旧属性
+   *    如果不需要旧样式,则遍历旧样式集合,并对每个样式进行置空操作
+   *    如果不需要事件,则将其的事件监听去掉,针对当前节点取消事件代理deleteListener(this, propKey)
+   *    如果旧属性不在新属性集合中,则需要删除旧属性DOMPropertyOperations.deleteValueForProperty(getNode(this), propKey);
+   * 然后更新新属性
+   *    如果存在新样式,则将新样式进行合并Object.assign({}, nextProp)
+   *    如果在旧样式中但不在新样式中,则清除该样式
+   *    如果既在旧样式中也在新样式中,且不相同,则更新该样式styleUpdates[styleName] = nextProp[styleName];
+   *    如果在新样式中,但不在旧样式中,则直接更新为新样式styleUpdates = nextProp;
+   *    如果存在事件更新,则添加事件监听的属性enqueuePutListener(this, propKey, nextProp, transaction);
+   *    如果存在新属性,则添加新属性,或者更新旧的同名属性DOMPropertyOperations.setValueForAttribute( getNode(this), propKey, nextProp, );
+   *
+   */
   _updateDOMProperties: function(lastProps, nextProps, transaction) {
     var propKey;
     var styleName;
@@ -969,6 +984,15 @@ ReactDOMComponent.Mixin = {
    * @param {object} nextProps
    * @param {ReactReconcileTransaction} transaction
    * @param {object} context
+   */
+  /**
+   *  先是删除不需要的子节点和内容
+   *      如果存在旧节点,而新节点不存在,说明当前节点在更新之后删除,执行this.updateChildren(null, transaction, context);
+   *      如果旧的内容存在,而新的内容不存在,说明当前内容在更新后被删除,此时执行 this.updateTextContent('');
+   *  更新子节点和内容
+   *      如果新子节点存在,则更新其子节点,此时执行this.updateChildren(nextChildren, transaction, context);
+   *      如果新的内容存在,则更新内容,此时执行方法this.updateTextContent('' + nextContent);
+   *
    */
   _updateDOMChildren: function(lastProps, nextProps, transaction, context) {
     //初始化
