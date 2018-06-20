@@ -977,15 +977,6 @@ ReactDOMComponent.Mixin = {
   },
 
   /**
-   * Reconciles the children with the various properties that affect the
-   * children content.
-   *
-   * @param {object} lastProps
-   * @param {object} nextProps
-   * @param {ReactReconcileTransaction} transaction
-   * @param {object} context
-   */
-  /**
    *  先是删除不需要的子节点和内容
    *      如果存在旧节点,而新节点不存在,说明当前节点在更新之后删除,执行this.updateChildren(null, transaction, context);
    *      如果旧的内容存在,而新的内容不存在,说明当前内容在更新后被删除,此时执行 this.updateTextContent('');

@@ -42,25 +42,8 @@ function StatelessComponent(Component) {}
 StatelessComponent.prototype.render = function() {
   var Component = ReactInstanceMap.get(this)._currentElement.type;
   var element = Component(this.props, this.context, this.updater);
-  warnIfInvalidElement(Component, element);
   return element;
 };
-
-function warnIfInvalidElement(Component, element) {
-  if (__DEV__) {
-    warning(
-      element === null || element === false || React.isValidElement(element),
-      '%s(...): A valid React element (or null) must be returned. You may have ' +
-        'returned undefined, an array or some other invalid object.',
-      Component.displayName || Component.name || 'Component',
-    );
-    warning(
-      !Component.childContextTypes,
-      '%s(...): childContextTypes cannot be defined on a functional component.',
-      Component.displayName || Component.name || 'Component',
-    );
-  }
-}
 
 function shouldConstruct(Component) {
   return !!(Component.prototype && Component.prototype.isReactComponent);
@@ -73,9 +56,6 @@ function isPureComponent(Component) {
 // Separated into a function to contain deoptimizations caused by try/finally.
 function measureLifeCyclePerf(fn, debugID, timerType) {
   if (debugID === 0) {
-    // Top-level wrappers (see ReactMount) and empty components (see
-    // ReactDOMEmptyComponent) are invisible to hooks and devtools.
-    // Both are implementation details that should go away in the future.
     return fn();
   }
 
@@ -120,7 +100,7 @@ function measureLifeCyclePerf(fn, debugID, timerType) {
  *
  * @private
  */
-var nextMountID = 1;
+
 
 /**
  * @lends {ReactCompositeComponent.prototype}
@@ -170,35 +150,24 @@ var ReactCompositeComponent = {
    * @final
    * @internal
    */
-  mountComponent: function(
-    transaction,
-    hostParent,
-    hostContainerInfo,
-    context,
-  ) {
+  /**
+   * 初始化组件,渲染标记,注册事件监听器
+   */
+  mountComponent: function(transaction,hostParent, hostContainerInfo, context, ) {
+    //当前元素对应的上下文
     this._context = context;
     this._mountOrder = nextMountID++;
     this._hostParent = hostParent;
     this._hostContainerInfo = hostContainerInfo;
-
     var publicProps = this._currentElement.props;
     var publicContext = this._processContext(context);
-
     var Component = this._currentElement.type;
-
     var updateQueue = transaction.getUpdateQueue();
-
-    // Initialize the public class
     var doConstruct = shouldConstruct(Component);
-    var inst = this._constructComponent(
-      doConstruct,
-      publicProps,
-      publicContext,
-      updateQueue,
-    );
+    //初始化公共类
+    var inst = this._constructComponent(doConstruct, publicProps, publicContext,updateQueue,);
     var renderedElement;
-
-    // Support functional components
+    // 用于判断组件是否为stateless,无状态组件没有状态更新队列,只专注渲染
     if (!doConstruct && (inst == null || inst.render == null)) {
       renderedElement = inst;
       warnIfInvalidElement(Component, renderedElement);
@@ -211,62 +180,35 @@ var ReactCompositeComponent = {
         this._compositeType = CompositeTypes.ImpureClass;
       }
     }
-
-    // These should be set up in the constructor, but as a convenience for
-    // simpler class abstractions, we set them up after the fact.
+    // 这些初始化参数本应该在构造器中设置,在此设置是为了便于进行简单的类抽象
     inst.props = publicProps;
     inst.context = publicContext;
     inst.refs = emptyObject;
     inst.updater = updateQueue;
-
     this._instance = inst;
-
-    // Store a reference from the instance back to the internal representation
+    // 将实例存储为一个引用
     ReactInstanceMap.set(inst, this);
-
-
+    //初始化state
     var initialState = inst.state;
     if (initialState === undefined) {
       inst.state = initialState = null;
     }
-
+    //初始化更新队列
     this._pendingStateQueue = null;
     this._pendingReplaceState = false;
     this._pendingForceUpdate = false;
-
     var markup;
+    //如果挂载时发生错误
     if (inst.unstable_handleError) {
-      markup = this.performInitialMountWithErrorHandling(
-        renderedElement,
-        hostParent,
-        hostContainerInfo,
-        transaction,
-        context,
-      );
+      markup = this.performInitialMountWithErrorHandling(renderedElement,hostParent, hostContainerInfo,transaction,context,);
     } else {
-      markup = this.performInitialMount(
-        renderedElement,
-        hostParent,
-        hostContainerInfo,
-        transaction,
-        context,
-      );
+      //执行初始化挂载
+      markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction,context,);
     }
-
+    //如果存在componentDidMount,则调用
     if (inst.componentDidMount) {
-      if (__DEV__) {
-        transaction.getReactMountReady().enqueue(() => {
-          measureLifeCyclePerf(
-            () => inst.componentDidMount(),
-            this._debugID,
-            'componentDidMount',
-          );
-        });
-      } else {
-        transaction.getReactMountReady().enqueue(inst.componentDidMount, inst);
-      }
+      transaction.getReactMountReady().enqueue(inst.componentDidMount, inst);
     }
-
     return markup;
   },
 
@@ -276,26 +218,12 @@ var ReactCompositeComponent = {
     publicContext,
     updateQueue,
   ) {
-    if (__DEV__) {
-      ReactCurrentOwner.current = this;
-      try {
-        return this._constructComponentWithoutOwner(
-          doConstruct,
-          publicProps,
-          publicContext,
-          updateQueue,
-        );
-      } finally {
-        ReactCurrentOwner.current = null;
-      }
-    } else {
       return this._constructComponentWithoutOwner(
         doConstruct,
         publicProps,
         publicContext,
         updateQueue,
       );
-    }
   },
 
   _constructComponentWithoutOwner: function(
@@ -307,135 +235,55 @@ var ReactCompositeComponent = {
     var Component = this._currentElement.type;
 
     if (doConstruct) {
-      if (__DEV__) {
-        return measureLifeCyclePerf(
-          () => new Component(publicProps, publicContext, updateQueue),
-          this._debugID,
-          'ctor',
-        );
-      } else {
         return new Component(publicProps, publicContext, updateQueue);
-      }
     }
-
-    // This can still be an instance in case of factory components
-    // but we'll count this as time spent rendering as the more common case.
-    if (__DEV__) {
-      return measureLifeCyclePerf(
-        () => Component(publicProps, publicContext, updateQueue),
-        this._debugID,
-        'render',
-      );
-    } else {
-      return Component(publicProps, publicContext, updateQueue);
-    }
+    return Component(publicProps, publicContext, updateQueue);
   },
 
-  performInitialMountWithErrorHandling: function(
-    renderedElement,
-    hostParent,
-    hostContainerInfo,
-    transaction,
-    context,
-  ) {
+  performInitialMountWithErrorHandling: function( renderedElement,  hostParent, hostContainerInfo, transaction, context, ) {
     var markup;
     var checkpoint = transaction.checkpoint();
     try {
-      markup = this.performInitialMount(
-        renderedElement,
-        hostParent,
-        hostContainerInfo,
-        transaction,
-        context,
-      );
+      //捕捉错误,如果没有错误,则初始化挂载
+      markup = this.performInitialMount( renderedElement,  hostParent, hostContainerInfo, transaction, context, );
     } catch (e) {
-      // Roll back to checkpoint, handle error (which may add items to the transaction), and take a new checkpoint
       transaction.rollback(checkpoint);
       this._instance.unstable_handleError(e);
       if (this._pendingStateQueue) {
-        this._instance.state = this._processPendingState(
-          this._instance.props,
-          this._instance.context,
-        );
+        this._instance.state = this._processPendingState( this._instance.props, this._instance.context, );
       }
       checkpoint = transaction.checkpoint();
-
+      //如果捕捉到错误,则执行unmountComponent()后在初始化挂载
       this._renderedComponent.unmountComponent(true);
       transaction.rollback(checkpoint);
-
-      // Try again - we've informed the component about the error, so they can render an error message this time.
-      // If this throws again, the error will bubble up (and can be caught by a higher error boundary).
-      markup = this.performInitialMount(
-        renderedElement,
-        hostParent,
-        hostContainerInfo,
-        transaction,
-        context,
-      );
+      markup = this.performInitialMount(  renderedElement, hostParent, hostContainerInfo, transaction,  context, );
     }
     return markup;
   },
 
-  performInitialMount: function(
-    renderedElement,
-    hostParent,
-    hostContainerInfo,
-    transaction,
-    context,
-  ) {
+  performInitialMount: function( renderedElement,  hostParent, hostContainerInfo, transaction, context, ) {
     var inst = this._instance;
-
     var debugID = 0;
-    if (__DEV__) {
-      debugID = this._debugID;
-    }
-
+    //如果存在componentWillMount() 就调用
     if (inst.componentWillMount) {
-      if (__DEV__) {
-        measureLifeCyclePerf(
-          () => inst.componentWillMount(),
-          debugID,
-          'componentWillMount',
-        );
-      } else {
-        inst.componentWillMount();
-      }
-      // When mounting, calls to `setState` by `componentWillMount` will set
-      // `this._pendingStateQueue` without triggering a re-render.
+      inst.componentWillMount();
+      //在componentWillMount时调用setState,是不会触发re-render的,而是自动合并
       if (this._pendingStateQueue) {
         inst.state = this._processPendingState(inst.props, inst.context);
       }
     }
-
-    // If not a stateless component, we now render
+    //如果不是无状态组件,即可开始渲染
     if (renderedElement === undefined) {
       renderedElement = this._renderValidatedComponent();
     }
-
     var nodeType = ReactNodeTypes.getType(renderedElement);
     this._renderedNodeType = nodeType;
-    var child = this._instantiateReactComponent(
-      renderedElement,
-      nodeType !== ReactNodeTypes.EMPTY /* shouldHaveDebugID */,
-    );
+    // 得到 _currentElement 对应的 component 类实例
+    var child = this._instantiateReactComponent(renderedElement, nodeType !== ReactNodeTypes.EMPTY );
     this._renderedComponent = child;
-
-    var markup = ReactReconciler.mountComponent(
-      child,
-      transaction,
-      hostParent,
-      hostContainerInfo,
-      this._processChildContext(context),
-      debugID,
-    );
-
-    if (__DEV__) {
-      if (debugID !== 0) {
-        var childDebugIDs = child._debugID !== 0 ? [child._debugID] : [];
-        ReactInstrumentation.debugTool.onSetChildren(debugID, childDebugIDs);
-      }
-    }
-
+    //render递归渲染
+    var markup = ReactReconciler.mountComponent( child,  transaction,  hostParent,  hostContainerInfo,
+                                                  this._processChildContext(context),  debugID,);
     return markup;
   },
 
@@ -455,7 +303,7 @@ var ReactCompositeComponent = {
     }
 
     var inst = this._instance;
-
+    //如果存在componentWillUnmount,则调用
     if (inst.componentWillUnmount && !inst._calledComponentWillUnmount) {
       inst._calledComponentWillUnmount = true;
 
@@ -466,50 +314,28 @@ var ReactCompositeComponent = {
           inst.componentWillUnmount.bind(inst),
         );
       } else {
-        if (__DEV__) {
-          measureLifeCyclePerf(
-            () => inst.componentWillUnmount(),
-            this._debugID,
-            'componentWillUnmount',
-          );
-        } else {
           inst.componentWillUnmount();
-        }
       }
     }
-
+    //如果组件已经渲染,则对组件进行componentWillUnmount()
     if (this._renderedComponent) {
       ReactReconciler.unmountComponent(this._renderedComponent, safely);
       this._renderedNodeType = null;
       this._renderedComponent = null;
       this._instance = null;
     }
-
-    // Reset pending fields
-    // Even if this component is scheduled for another update in ReactUpdates,
-    // it would still be ignored because these fields are reset.
+    //重置相关参数、更新队列以及更新状态
     this._pendingStateQueue = null;
     this._pendingReplaceState = false;
     this._pendingForceUpdate = false;
     this._pendingCallbacks = null;
     this._pendingElement = null;
 
-    // These fields do not really need to be reset since this object is no
-    // longer accessible.
     this._context = null;
     this._rootNodeID = 0;
     this._topLevelWrapper = null;
-
-    // Delete the reference from the instance to this internal representation
-    // which allow the internals to be properly cleaned up even if the user
-    // leaks a reference to the public instance.
+    //删除这个实例
     ReactInstanceMap.remove(inst);
-
-    // Some existing components rely on inst.props even after they've been
-    // destroyed (in event handlers).
-    // TODO: inst.props = null;
-    // TODO: inst.state = null;
-    // TODO: inst.context = null;
   },
 
   /**
@@ -618,19 +444,12 @@ var ReactCompositeComponent = {
     }
   },
 
+  // receiveComponent 是通过调用 updateComponent 进行组件更新的
   receiveComponent: function(nextElement, transaction, nextContext) {
     var prevElement = this._currentElement;
     var prevContext = this._context;
-
     this._pendingElement = null;
-
-    this.updateComponent(
-      transaction,
-      prevElement,
-      nextElement,
-      prevContext,
-      nextContext,
-    );
+    this.updateComponent(transaction,prevElement,nextElement,prevContext,nextContext,);
   },
 
   /**
@@ -676,25 +495,12 @@ var ReactCompositeComponent = {
    * @internal
    * @overridable
    */
-  updateComponent: function(
-    transaction,
-    prevParentElement,
-    nextParentElement,
-    prevUnmaskedContext,
-    nextUnmaskedContext,
-  ) {
+  updateComponent: function(transaction,prevParentElement,nextParentElement,prevUnmaskedContext,nextUnmaskedContext,) {
     var inst = this._instance;
-    invariant(
-      inst != null,
-      'Attempted to update component `%s` that has already been unmounted ' +
-        '(or failed to mount).',
-      this.getName() || 'ReactCompositeComponent',
-    );
-
     var willReceive = false;
     var nextContext;
 
-    // Determine if the context has changed or not
+    // 上下文是否改变
     if (this._context === nextUnmaskedContext) {
       nextContext = inst.context;
     } else {
@@ -705,77 +511,36 @@ var ReactCompositeComponent = {
     var prevProps = prevParentElement.props;
     var nextProps = nextParentElement.props;
 
-    // Not a simple state update but a props update
+    // 新旧属性不同
     if (prevParentElement !== nextParentElement) {
       willReceive = true;
     }
-
-    // An update here will schedule an update but immediately set
-    // _pendingStateQueue which will ensure that any state updates gets
-    // immediately reconciled instead of waiting for the next batch.
+    //新旧属性不同,并且存在componentWillReceiveProps,就执行componentWillReceiveProps()
     if (willReceive && inst.componentWillReceiveProps) {
-      if (__DEV__) {
-        measureLifeCyclePerf(
-          () => inst.componentWillReceiveProps(nextProps, nextContext),
-          this._debugID,
-          'componentWillReceiveProps',
-        );
-      } else {
-        inst.componentWillReceiveProps(nextProps, nextContext);
-      }
+      inst.componentWillReceiveProps(nextProps, nextContext);
     }
-
+    //将新的state合并到更新队列中,此时的nextState是最新的state
     var nextState = this._processPendingState(nextProps, nextContext);
     var shouldUpdate = true;
-
+    //根据更新队列和shouldComponentUpdate的状态来判断是否需要更新组件
     if (!this._pendingForceUpdate) {
       if (inst.shouldComponentUpdate) {
-        if (__DEV__) {
-          shouldUpdate = measureLifeCyclePerf(
-            () => inst.shouldComponentUpdate(nextProps, nextState, nextContext),
-            this._debugID,
-            'shouldComponentUpdate',
-          );
-        } else {
-          shouldUpdate = inst.shouldComponentUpdate(
-            nextProps,
-            nextState,
-            nextContext,
-          );
-        }
+        shouldUpdate = inst.shouldComponentUpdate(nextProps,nextState,nextContext,);
       } else {
         if (this._compositeType === CompositeTypes.PureClass) {
-          shouldUpdate =
-            !shallowEqual(prevProps, nextProps) ||
-            !shallowEqual(inst.state, nextState);
+          shouldUpdate =!shallowEqual(prevProps, nextProps) ||!shallowEqual(inst.state, nextState);
         }
       }
-    }
-
-    if (__DEV__) {
-      warning(
-        shouldUpdate !== undefined,
-        '%s.shouldComponentUpdate(): Returned undefined instead of a ' +
-          'boolean value. Make sure to return true or false.',
-        this.getName() || 'ReactCompositeComponent',
-      );
     }
 
     this._updateBatchNumber = null;
     if (shouldUpdate) {
+      //重置更新队列
       this._pendingForceUpdate = false;
-      // Will set `this.props`, `this.state` and `this.context`.
-      this._performComponentUpdate(
-        nextParentElement,
-        nextProps,
-        nextState,
-        nextContext,
-        transaction,
-        nextUnmaskedContext,
-      );
+      //即将更新this.props,this.state,和this.context
+      this._performComponentUpdate(nextParentElement,nextProps, nextState,nextContext,transaction,nextUnmaskedContext,);
     } else {
-      // If it's determined that a component should not update, we still want
-      // to set props and state but we shortcut the rest of the update.
+      // 如果确定组件不更新,仍然要这是props和state
       this._currentElement = nextParentElement;
       this._context = nextUnmaskedContext;
       inst.props = nextProps;
@@ -825,73 +590,36 @@ var ReactCompositeComponent = {
    * @param {?object} unmaskedContext
    * @private
    */
-  _performComponentUpdate: function(
-    nextElement,
-    nextProps,
-    nextState,
-    nextContext,
-    transaction,
-    unmaskedContext,
-  ) {
+  /**
+   * 当组件需要更新时,调用
+   */
+  _performComponentUpdate: function(nextElement,nextProps,nextState,nextContext,transaction,unmaskedContext) {
     var inst = this._instance;
-
     var hasComponentDidUpdate = Boolean(inst.componentDidUpdate);
     var prevProps;
     var prevState;
     var prevContext;
+    //如果存在componentDidUpdate,则将当前的props,state和context保存一份
     if (hasComponentDidUpdate) {
       prevProps = inst.props;
       prevState = inst.state;
       prevContext = inst.context;
     }
-
+    //执行componentWillUpdate
     if (inst.componentWillUpdate) {
-      if (__DEV__) {
-        measureLifeCyclePerf(
-          () => inst.componentWillUpdate(nextProps, nextState, nextContext),
-          this._debugID,
-          'componentWillUpdate',
-        );
-      } else {
-        inst.componentWillUpdate(nextProps, nextState, nextContext);
-      }
+      inst.componentWillUpdate(nextProps, nextState, nextContext);
     }
-
+    //更新this.props,this.state,this.context
     this._currentElement = nextElement;
     this._context = unmaskedContext;
     inst.props = nextProps;
     inst.state = nextState;
     inst.context = nextContext;
-
+    //渲染组件
     this._updateRenderedComponent(transaction, unmaskedContext);
-
+    //当组件完成更新后,如果存在ComponentDidUpdate,则调用
     if (hasComponentDidUpdate) {
-      if (__DEV__) {
-        transaction.getReactMountReady().enqueue(() => {
-          measureLifeCyclePerf(
-            inst.componentDidUpdate.bind(
-              inst,
-              prevProps,
-              prevState,
-              prevContext,
-            ),
-            this._debugID,
-            'componentDidUpdate',
-          );
-        });
-      } else {
-        transaction
-          .getReactMountReady()
-          .enqueue(
-            inst.componentDidUpdate.bind(
-              inst,
-              prevProps,
-              prevState,
-              prevContext,
-            ),
-            inst,
-          );
-      }
+      transaction.getReactMountReady().enqueue(inst.componentDidUpdate.bind(inst,prevProps, prevState,prevContext,),inst,);
     }
   },
 
@@ -901,56 +629,32 @@ var ReactCompositeComponent = {
    * @param {ReactReconcileTransaction} transaction
    * @internal
    */
+  /**
+   * 调用render渲染组件
+   */
   _updateRenderedComponent: function(transaction, context) {
     var prevComponentInstance = this._renderedComponent;
     var prevRenderedElement = prevComponentInstance._currentElement;
     var nextRenderedElement = this._renderValidatedComponent();
 
     var debugID = 0;
-    if (__DEV__) {
-      debugID = this._debugID;
-    }
-
+    //如果需要更新,则调用ReactReconciler.receiveComponent()继续更新组件
     if (shouldUpdateReactComponent(prevRenderedElement, nextRenderedElement)) {
-      ReactReconciler.receiveComponent(
-        prevComponentInstance,
-        nextRenderedElement,
-        transaction,
-        this._processChildContext(context),
-      );
+      ReactReconciler.receiveComponent(prevComponentInstance,nextRenderedElement,transaction,this._processChildContext(context),);
     } else {
+      //如果不需要更新,则渲染组件
       var oldHostNode = ReactReconciler.getHostNode(prevComponentInstance);
       ReactReconciler.unmountComponent(prevComponentInstance, false);
 
       var nodeType = ReactNodeTypes.getType(nextRenderedElement);
       this._renderedNodeType = nodeType;
-      var child = this._instantiateReactComponent(
-        nextRenderedElement,
-        nodeType !== ReactNodeTypes.EMPTY /* shouldHaveDebugID */,
-      );
+      //得到 nextRenderedElement 对应的 component 类实例
+      var child = this._instantiateReactComponent( nextRenderedElement,nodeType !== ReactNodeTypes.EMPTY );
       this._renderedComponent = child;
+      //使用render递归渲染
+      var nextMarkup = ReactReconciler.mountComponent(child,transaction,this._hostParent,this._hostContainerInfo,this._processChildContext(context),debugID,);
 
-      var nextMarkup = ReactReconciler.mountComponent(
-        child,
-        transaction,
-        this._hostParent,
-        this._hostContainerInfo,
-        this._processChildContext(context),
-        debugID,
-      );
-
-      if (__DEV__) {
-        if (debugID !== 0) {
-          var childDebugIDs = child._debugID !== 0 ? [child._debugID] : [];
-          ReactInstrumentation.debugTool.onSetChildren(debugID, childDebugIDs);
-        }
-      }
-
-      this._replaceNodeWithMarkup(
-        oldHostNode,
-        nextMarkup,
-        prevComponentInstance,
-      );
+      this._replaceNodeWithMarkup(oldHostNode, nextMarkup,prevComponentInstance,);
     }
   },
 
@@ -973,26 +677,7 @@ var ReactCompositeComponent = {
   _renderValidatedComponentWithoutOwnerOrContext: function() {
     var inst = this._instance;
     var renderedElement;
-
-    if (__DEV__) {
-      renderedElement = measureLifeCyclePerf(
-        () => inst.render(),
-        this._debugID,
-        'render',
-      );
-    } else {
-      renderedElement = inst.render();
-    }
-
-    if (__DEV__) {
-      // We allow auto-mocks to proceed as if they're returning null.
-      if (renderedElement === undefined && inst.render._isMockFunction) {
-        // This is probably bad practice. Consider warning here and
-        // deprecating this convenience.
-        renderedElement = null;
-      }
-    }
-
+    renderedElement = inst.render();
     return renderedElement;
   },
 
@@ -1001,26 +686,7 @@ var ReactCompositeComponent = {
    */
   _renderValidatedComponent: function() {
     var renderedElement;
-    if (__DEV__ || this._compositeType !== CompositeTypes.StatelessFunctional) {
-      ReactCurrentOwner.current = this;
-      try {
-        renderedElement = this._renderValidatedComponentWithoutOwnerOrContext();
-      } finally {
-        ReactCurrentOwner.current = null;
-      }
-    } else {
-      renderedElement = this._renderValidatedComponentWithoutOwnerOrContext();
-    }
-    invariant(
-      // TODO: An `isValidNode` function would probably be more appropriate
-      renderedElement === null ||
-        renderedElement === false ||
-        React.isValidElement(renderedElement),
-      '%s.render(): A valid React element (or null) must be returned. You may have ' +
-        'returned undefined, an array or some other invalid object.',
-      this.getName() || 'ReactCompositeComponent',
-    );
-
+    renderedElement = this._renderValidatedComponentWithoutOwnerOrContext();
     return renderedElement;
   },
 

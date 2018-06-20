@@ -69,9 +69,6 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
   var injectedMixins = [];
 
   /**
-   * Composite components are higher-level components that compose other composite
-   * or host components.
-   *
    * To create a new type of `ReactClass`, pass a specification of
    * your new class to `React.createClass`. The only requirement of your class
    * specification is that you implement a `render` method.
@@ -649,26 +646,13 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
   _assign(ReactClassComponent.prototype, ReactComponent.prototype, ReactClassMixin);
 
   /**
-   * Creates a composite component class given a class specification.
-   * See https://facebook.github.io/react/docs/top-level-api.html#react.createclass
-   *
-   * @param {object} spec Class specification (which must define `render`).
-   * @return {function} Component constructor function.
-   * @public
+   * 创建自定义组件
    */
   function createClass(spec) {
-    // To keep our warnings more understandable, we'll use a little hack here to
-    // ensure that Constructor.name !== 'Constructor'. This makes sure we don't
-    // unnecessarily identify a class without displayName as 'Constructor'.
+    //创建自定义组件
     var Constructor = identity(function (props, context, updater) {
-      // This constructor gets overridden by mocks. The argument is used
-      // by mocks to assert on what gets mounted.
 
-      if ("development" !== 'production') {
-        "development" !== 'production' ? warning(this instanceof Constructor, 'Something is calling a React component directly. Use a factory or ' + 'JSX instead. See: https://fb.me/react-legacyfactory') : void 0;
-      }
-
-      // Wire up auto-binding
+      // 自动绑定
       if (this.__reactAutoBindPairs.length) {
         bindAutoBindMethods(this);
       }
@@ -679,58 +663,26 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       this.updater = updater || ReactNoopUpdateQueue;
 
       this.state = null;
-
-      // ReactClasses doesn't have constructors. Instead, they use the
-      // getInitialState and componentWillMount methods for initialization.
-
+      //ReactClass没有构造器,通过getInitialState和componentWillMount来代替
       var initialState = this.getInitialState ? this.getInitialState() : null;
-      if ("development" !== 'production') {
-        // We allow auto-mocks to proceed as if they're returning null.
-        if (initialState === undefined && this.getInitialState._isMockFunction) {
-          // This is probably bad practice. Consider warning here and
-          // deprecating this convenience.
-          initialState = null;
-        }
-      }
-      _invariant(typeof initialState === 'object' && !Array.isArray(initialState), '%s.getInitialState(): must return an object or null', Constructor.displayName || 'ReactCompositeComponent');
-
       this.state = initialState;
     });
+    //原型链继承父类
     Constructor.prototype = new ReactClassComponent();
     Constructor.prototype.constructor = Constructor;
     Constructor.prototype.__reactAutoBindPairs = [];
-
+    //合并mixin
     injectedMixins.forEach(mixSpecIntoComponent.bind(null, Constructor));
 
     mixSpecIntoComponent(Constructor, IsMountedMixin);
     mixSpecIntoComponent(Constructor, spec);
 
-    // Initialize the defaultProps property after all mixins have been merged.
+    // 所有的mixin合并后初始化defaultProps(在整个生命周期中,getDefaultProps只执行一次)
     if (Constructor.getDefaultProps) {
       Constructor.defaultProps = Constructor.getDefaultProps();
     }
 
-    if ("development" !== 'production') {
-      // This is a tag to indicate that the use of these method names is ok,
-      // since it's used with createClass. If it's not, then it's likely a
-      // mistake so we'll warn you to use the static property, property
-      // initializer or constructor respectively.
-      if (Constructor.getDefaultProps) {
-        Constructor.getDefaultProps.isReactClassApproved = {};
-      }
-      if (Constructor.prototype.getInitialState) {
-        Constructor.prototype.getInitialState.isReactClassApproved = {};
-      }
-    }
-
-    _invariant(Constructor.prototype.render, 'createClass(...): Class specification must implement a `render` method.');
-
-    if ("development" !== 'production') {
-      "development" !== 'production' ? warning(!Constructor.prototype.componentShouldUpdate, '%s has a method called ' + 'componentShouldUpdate(). Did you mean shouldComponentUpdate()? ' + 'The name is phrased as a question because the function is ' + 'expected to return a value.', spec.displayName || 'A component') : void 0;
-      "development" !== 'production' ? warning(!Constructor.prototype.componentWillRecieveProps, '%s has a method called ' + 'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?', spec.displayName || 'A component') : void 0;
-    }
-
-    // Reduce time spent doing lookups by setting these on the prototype.
+    // 减少查找并设置原型的时间
     for (var methodName in ReactClassInterface) {
       if (!Constructor.prototype[methodName]) {
         Constructor.prototype[methodName] = null;
