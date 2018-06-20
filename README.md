@@ -889,7 +889,8 @@ if (!this._pendingForceUpdate) {
 }
 ```
 ---
-
+![Image text](https://github.com/mazhy/react-15.6-source-parsing/blob/master/image/setState%E8%B0%83%E7%94%A8%E6%A0%88.png)
+---
 ### setState循环调用风险
 ---
 1.  当调用 setState 时，实际上会执行 enqueueSetState 方法，并对 partialState 以及_pendingStateQueue
