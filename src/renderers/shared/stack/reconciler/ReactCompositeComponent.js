@@ -461,22 +461,13 @@ var ReactCompositeComponent = {
    * @param {ReactReconcileTransaction} transaction
    * @internal
    */
+
+  // 如果存在 _pendingElement、_pendingStateQueue和_pendingForceUpdate，则更新组件
   performUpdateIfNecessary: function(transaction) {
     if (this._pendingElement != null) {
-      ReactReconciler.receiveComponent(
-        this,
-        this._pendingElement,
-        transaction,
-        this._context,
-      );
+      ReactReconciler.receiveComponent(this, this._pendingElement,transaction,this._context,);
     } else if (this._pendingStateQueue !== null || this._pendingForceUpdate) {
-      this.updateComponent(
-        transaction,
-        this._currentElement,
-        this._currentElement,
-        this._context,
-        this._context,
-      );
+      this.updateComponent(transaction,this._currentElement,this._currentElement,this._context,this._context,);
     } else {
       this._updateBatchNumber = null;
     }

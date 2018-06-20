@@ -863,6 +863,122 @@ StatelessComponent.prototype.render = function() {
 ![Image text](https://github.com/mazhy/react-15.6-source-parsing/blob/master/image/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png)
 ---
 
+### setState
+---
+1.  react通过this.state来访问state,通过this.setState()方法来更新state,
+    当this.setState()被调用的时候,React会重新调用render方法来重新渲染UI
+2.  setState是通过一个队列机制实现state更新,当执行setState时,会将需要更新的state合并后放入到状态队列中,
+    而不会立刻更新this.state,队列机制可以高效地批量更新state
+3.  如果不通过setState而直接修改this.state的值,那么该state就不会放入到状态队列中,
+    当下次调用setState并对状态队列进行合并时,将会忽略之前直接被修改的state,而造成无法预知的错误
+4.  React利用状态队列机制实现了setState的异步更新,避免频繁重复更新state
+---
+```javascript
+//将新的state合并到更新队列中,此时的nextState是最新的state
+var nextState = this._processPendingState(nextProps, nextContext);
+var shouldUpdate = true;
+//根据更新队列和shouldComponentUpdate的状态来判断是否需要更新组件
+if (!this._pendingForceUpdate) {
+  if (inst.shouldComponentUpdate) {
+	shouldUpdate = inst.shouldComponentUpdate(nextProps,nextState,nextContext,);
+  } else {
+	if (this._compositeType === CompositeTypes.PureClass) {
+	  shouldUpdate =!shallowEqual(prevProps, nextProps) ||!shallowEqual(inst.state, nextState);
+	}
+  }
+}
+```
+---
+
+### setState循环调用风险
+---
+1.  当调用 setState 时，实际上会执行 enqueueSetState 方法，并对 partialState 以及_pendingStateQueue
+    更新队列进行合并操作，最终通过 enqueueUpdate 执行 state 更新。
+2.  而 performUpdateIfNecessary 方法会获取 _pendingElement、_pendingStateQueue、_pendingForceUpdate，并调用
+    receiveComponent 和 updateComponent 方法进行组件更新。
+3.  如果在 shouldComponentUpdate 或 componentWillUpdate 方法中调用 setState ，此时
+    this._pendingStateQueue != null，则 performUpdateIfNecessary 方法就会调用 updateComponent
+    方法进行组件更新，但 updateComponent 方法又会调用 shouldComponentUpdate 和 componentWillUpdate
+    方法，因此造成循环调用，使得浏览器内存占满后崩溃
+---
+```javascript
+//更新state
+ReactComponent.prototype.setState = function(partialState, callback) {
+  this.updater.enqueueSetState(this, partialState);
+  if (callback) {
+    this.updater.enqueueCallback(this, callback, 'setState');
+  }
+};
+
+enqueueSetState: function(publicInstance, partialState) {
+	var internalInstance = getInternalInstanceReadyForUpdate( publicInstance, 'setState',  );
+
+	if (!internalInstance) {
+	return;
+	}
+	//更新队列合并操作
+	var queue = internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = []);
+	queue.push(partialState);
+	enqueueUpdate(internalInstance);
+},
+
+function getInternalInstanceReadyForUpdate(publicInstance, callerName) {
+  var internalInstance = ReactInstanceMap.get(publicInstance);
+  if (!internalInstance) {
+    return null;
+  }
+  return internalInstance;
+}
+
+// 如果存在 _pendingElement、_pendingStateQueue和_pendingForceUpdate，则更新组件
+performUpdateIfNecessary: function(transaction) {
+	if (this._pendingElement != null) {
+		ReactReconciler.receiveComponent(this, this._pendingElement,transaction,this._context,);
+	} else if (this._pendingStateQueue !== null || this._pendingForceUpdate) {
+	  this.updateComponent(transaction,this._currentElement,this._currentElement,this._context,this._context,);
+	} else {
+	  this._updateBatchNumber = null;
+	}
+},
+
+/**
+ * 解析:
+ *    如果isBatchingUpdates为true,则对所有队列中的更新执行batchedUpdates方法
+ *    否则只把当前组件放入dirtyComponents中
+ */
+function enqueueUpdate(component) {
+  //如果不处于批量更新模式
+  if (!batchingStrategy.isBatchingUpdates) {
+    batchingStrategy.batchedUpdates(enqueueUpdate, component);
+    return;
+  }
+  //如果处于批量更新模式,则将该组件保存在dirtyComponents数组中
+  dirtyComponents.push(component);
+  if (component._updateBatchNumber == null) {
+    component._updateBatchNumber = updateBatchNumber + 1;
+  }
+}
+
+
+
+var ReactDefaultBatchingStrategy = {
+  isBatchingUpdates: false,
+
+  batchedUpdates: function(callback, a, b, c, d, e) {
+    var alreadyBatchingUpdates = ReactDefaultBatchingStrategy.isBatchingUpdates;
+
+    ReactDefaultBatchingStrategy.isBatchingUpdates = true;
+
+    if (alreadyBatchingUpdates) {
+      return callback(a, b, c, d, e);
+    } else {
+		//事物调用
+      return transaction.perform(callback, null, a, b, c, d, e);
+    }
+  },
+};
+```
+
 
 
 

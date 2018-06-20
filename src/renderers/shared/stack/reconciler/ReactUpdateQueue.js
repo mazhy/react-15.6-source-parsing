@@ -39,36 +39,8 @@ function formatUnexpectedArgument(arg) {
 function getInternalInstanceReadyForUpdate(publicInstance, callerName) {
   var internalInstance = ReactInstanceMap.get(publicInstance);
   if (!internalInstance) {
-    if (__DEV__) {
-      var ctor = publicInstance.constructor;
-      // Only warn when we have a callerName. Otherwise we should be silent.
-      // We're probably calling from enqueueCallback. We don't want to warn
-      // there because we already warned for the corresponding lifecycle method.
-      warning(
-        !callerName,
-        '%s(...): Can only update a mounted or mounting component. ' +
-          'This usually means you called %s() on an unmounted component. ' +
-          'This is a no-op. Please check the code for the %s component.',
-        callerName,
-        callerName,
-        (ctor && (ctor.displayName || ctor.name)) || 'ReactClass',
-      );
-    }
     return null;
   }
-
-  if (__DEV__) {
-    warning(
-      ReactCurrentOwner.current == null,
-      '%s(...): Cannot update during an existing state transition (such as ' +
-        "within `render` or another component's constructor). Render methods " +
-        'should be a pure function of props and state; constructor ' +
-        'side-effects are an anti-pattern, but can be moved to ' +
-        '`componentWillMount`.',
-      callerName,
-    );
-  }
-
   return internalInstance;
 }
 
@@ -123,12 +95,6 @@ var ReactUpdateQueue = {
   enqueueCallback: function(publicInstance, callback, callerName) {
     ReactUpdateQueue.validateCallback(callback, callerName);
     var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
-
-    // Previously we would throw an error if we didn't have an internal
-    // instance. Since we want to make it a no-op instead, we mirror the same
-    // behavior we have in other enqueue* methods.
-    // We also need to ignore callbacks in componentWillMount. See
-    // enqueueUpdates.
     if (!internalInstance) {
       return null;
     }
@@ -138,10 +104,6 @@ var ReactUpdateQueue = {
     } else {
       internalInstance._pendingCallbacks = [callback];
     }
-    // TODO: The callback here is ignored when setState is called from
-    // componentWillMount. Either fix it or disallow doing so completely in
-    // favor of getInitialState. Alternatively, we can disallow
-    // componentWillMount during server-side rendering.
     enqueueUpdate(internalInstance);
   },
 
@@ -230,29 +192,14 @@ var ReactUpdateQueue = {
    * @internal
    */
   enqueueSetState: function(publicInstance, partialState) {
-    if (__DEV__) {
-      ReactInstrumentation.debugTool.onSetState();
-      warning(
-        partialState != null,
-        'setState(...): You passed an undefined or null state object; ' +
-          'instead, use forceUpdate().',
-      );
-    }
-
-    var internalInstance = getInternalInstanceReadyForUpdate(
-      publicInstance,
-      'setState',
-    );
+    var internalInstance = getInternalInstanceReadyForUpdate( publicInstance, 'setState',  );
 
     if (!internalInstance) {
       return;
     }
-
-    var queue =
-      internalInstance._pendingStateQueue ||
-      (internalInstance._pendingStateQueue = []);
+    //更新队列合并操作
+    var queue = internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = []);
     queue.push(partialState);
-
     enqueueUpdate(internalInstance);
   },
 

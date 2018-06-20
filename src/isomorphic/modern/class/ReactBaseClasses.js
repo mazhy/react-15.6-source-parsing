@@ -15,7 +15,7 @@ function ReactComponent(props, context, updater) {
 }
 
 ReactComponent.prototype.isReactComponent = {};
-
+//更新state
 ReactComponent.prototype.setState = function(partialState, callback) {
   this.updater.enqueueSetState(this, partialState);
   if (callback) {

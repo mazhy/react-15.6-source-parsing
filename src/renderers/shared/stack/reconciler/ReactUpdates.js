@@ -207,23 +207,17 @@ var flushBatchedUpdates = function() {
 };
 
 /**
- * Mark a component as needing a rerender, adding an optional callback to a
- * list of functions which will be executed once the rerender occurs.
+ * 解析:
+ *    如果isBatchingUpdates为true,则对所有队列中的更新执行batchedUpdates方法
+ *    否则只把当前组件放入dirtyComponents中
  */
 function enqueueUpdate(component) {
-  ensureInjected();
-
-  // Various parts of our code (such as ReactCompositeComponent's
-  // _renderValidatedComponent) assume that calls to render aren't nested;
-  // verify that that's the case. (This is called by each top-level update
-  // function, like setState, forceUpdate, etc.; creation and
-  // destruction of top-level components is guarded in ReactMount.)
-
+  //如果不处于批量更新模式
   if (!batchingStrategy.isBatchingUpdates) {
     batchingStrategy.batchedUpdates(enqueueUpdate, component);
     return;
   }
-
+  //如果处于批量更新模式,则将该组件保存在dirtyComponents数组中
   dirtyComponents.push(component);
   if (component._updateBatchNumber == null) {
     component._updateBatchNumber = updateBatchNumber + 1;
@@ -254,18 +248,6 @@ var ReactUpdatesInjection = {
   },
 
   injectBatchingStrategy: function(_batchingStrategy) {
-    invariant(
-      _batchingStrategy,
-      'ReactUpdates: must provide a batching strategy',
-    );
-    invariant(
-      typeof _batchingStrategy.batchedUpdates === 'function',
-      'ReactUpdates: must provide a batchedUpdates() function',
-    );
-    invariant(
-      typeof _batchingStrategy.isBatchingUpdates === 'boolean',
-      'ReactUpdates: must provide an isBatchingUpdates boolean attribute',
-    );
     batchingStrategy = _batchingStrategy;
   },
 };

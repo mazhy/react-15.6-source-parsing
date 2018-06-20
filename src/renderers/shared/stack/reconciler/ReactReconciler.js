@@ -187,34 +187,9 @@ var ReactReconciler = {
     updateBatchNumber,
   ) {
     if (internalInstance._updateBatchNumber !== updateBatchNumber) {
-      // The component's enqueued batch number should always be the current
-      // batch or the following one.
-      warning(
-        internalInstance._updateBatchNumber == null ||
-          internalInstance._updateBatchNumber === updateBatchNumber + 1,
-        'performUpdateIfNecessary: Unexpected batch number (current %s, ' +
-          'pending %s)',
-        updateBatchNumber,
-        internalInstance._updateBatchNumber,
-      );
       return;
     }
-    if (__DEV__) {
-      if (internalInstance._debugID !== 0) {
-        ReactInstrumentation.debugTool.onBeforeUpdateComponent(
-          internalInstance._debugID,
-          internalInstance._currentElement,
-        );
-      }
-    }
     internalInstance.performUpdateIfNecessary(transaction);
-    if (__DEV__) {
-      if (internalInstance._debugID !== 0) {
-        ReactInstrumentation.debugTool.onUpdateComponent(
-          internalInstance._debugID,
-        );
-      }
-    }
   },
 };
 
