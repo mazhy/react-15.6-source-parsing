@@ -51,8 +51,8 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="492">
-              <caret line="1046" column="29" lean-forward="true" selection-start-line="1046" selection-start-column="29" selection-end-line="1046" selection-end-column="29" />
+            <state relative-caret-position="302">
+              <caret line="1036" column="86" lean-forward="false" selection-start-line="1036" selection-start-column="86" selection-end-line="1036" selection-end-column="86" />
               <folding />
             </state>
           </provider>
@@ -186,8 +186,8 @@
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdates.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactDefaultBatchingStrategy.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/utils/Transaction.js" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -364,12 +364,12 @@
       <workItem from="1529397765029" duration="8190000" />
       <workItem from="1529407015704" duration="6042000" />
       <workItem from="1529416448532" duration="595000" />
-      <workItem from="1529458111444" duration="21723000" />
+      <workItem from="1529458111444" duration="22238000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="36550000" />
+    <option name="totallyTimeSpent" value="37065000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -822,8 +822,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="492">
-          <caret line="1046" column="29" lean-forward="true" selection-start-line="1046" selection-start-column="29" selection-end-line="1046" selection-end-column="29" />
+        <state relative-caret-position="302">
+          <caret line="1036" column="86" lean-forward="false" selection-start-line="1036" selection-start-column="86" selection-end-line="1036" selection-end-column="86" />
           <folding />
         </state>
       </provider>

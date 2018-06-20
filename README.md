@@ -1034,6 +1034,8 @@ var ReactDefaultBatchingStrategy = {
 ---
 ![Image text](https://github.com/mazhy/react-15.6-source-parsing/blob/master/image/%E4%BA%8B%E7%89%A9.png)
 ---
+当使用transaction.perform执行方法method的时候会按顺序先执行WRAPPER里面的initialize方法然后执行method最后再执行close方法
+---
 1.  从流程图上可以看出,每一个method都会被一个wrapper所包裹,通过perform(method)的方式调用,而方法前后分别有initialize,close,和aop类似
 2.  在ReactDefaultBatchingStrategy.batchedUpdates()方法中实际调用的是transaction.perform(enqueueUpdate),
     但enqueueUpdate方法中仍然存在transaction.perform(enqueueUpdate),会不会造成死循环??
