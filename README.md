@@ -1032,7 +1032,7 @@ var ReactDefaultBatchingStrategy = {
 
 ## transaction事物
 ---
-先上图
+![Image text](https://github.com/mazhy/react-15.6-source-parsing/blob/master/image/%E4%BA%8B%E7%89%A9.png)
 ---
 1.  从流程图上可以看出,每一个method都会被一个wrapper所包裹,通过perform(method)的方式调用,而方法前后分别有initialize,close,和aop类似
 2.  在ReactDefaultBatchingStrategy.batchedUpdates()方法中实际调用的是transaction.perform(enqueueUpdate),
