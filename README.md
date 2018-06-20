@@ -733,6 +733,35 @@ mixin，设置初始化 defaultProps，返回构造函数。
       inst.context = nextContext;
     }
   },
+  //在componentShouldUpdate()方法执行前调用了:就是说在调用之前将所有state操作合并
+    _processPendingState: function(props, context) {
+      var inst = this._instance;
+      var queue = this._pendingStateQueue;
+      var replace = this._pendingReplaceState;
+      this._pendingReplaceState = false;
+      this._pendingStateQueue = null;
+      //如果队列为null,返回原state
+      if (!queue) {
+        return inst.state;
+      }
+      //如果队列中有一个更新就返回这个更新值
+      if (replace && queue.length === 1) {
+        return queue[0];
+      }
+      //如果队列中有多个更新,就将他们合并
+      var nextState = Object.assign({}, replace ? queue[0] : inst.state);
+      for (var i = replace ? 1 : 0; i < queue.length; i++) {
+        var partial = queue[i];
+        Object.assign(
+          nextState,
+          typeof partial === 'function'
+            ? partial.call(inst, nextState, props, context)
+            : partial,
+        );
+      }
+  
+      return nextState;
+    },
   
     /**
    * 当组件需要更新时,调用
@@ -904,6 +933,7 @@ if (!this._pendingForceUpdate) {
 ---
 ```javascript
 //更新state
+//该方法传入两个参数,前者是新的state值,后者是回调函数
 ReactComponent.prototype.setState = function(partialState, callback) {
   this.updater.enqueueSetState(this, partialState);
   if (callback) {
@@ -911,18 +941,39 @@ ReactComponent.prototype.setState = function(partialState, callback) {
   }
 };
 
+//在组件构造函数中发现updater是参数传进来的
+function ReactComponent(props, context, updater) {
+  this.props = props;
+  this.context = context;
+  this.refs = emptyObject;
+  this.updater = updater || ReactNoopUpdateQueue;
+}
+
+//在ReactCompositeComponent的_constructComponentWithoutOwner()方法中发现了new Component()
+//在updater的位置上是updateQueue
+_constructComponentWithoutOwner: function(doConstruct,publicProps, publicContext,updateQueue,) {
+    var Component = this._currentElement.type;
+
+    if (doConstruct) {
+        return new Component(publicProps, publicContext, updateQueue);
+    }
+    return Component(publicProps, publicContext, updateQueue);
+},
+
 enqueueSetState: function(publicInstance, partialState) {
+	//获取当前组件的实例对象,赋值给internalInstance
 	var internalInstance = getInternalInstanceReadyForUpdate( publicInstance, 'setState',  );
 
 	if (!internalInstance) {
-	return;
+		return;
 	}
-	//更新队列合并操作
+	//判断当前实例对象中是否存在state更新队列,没有就初始化,然后更新队列合并操作
 	var queue = internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = []);
 	queue.push(partialState);
 	enqueueUpdate(internalInstance);
 },
 
+//获取当前组件的实例
 function getInternalInstanceReadyForUpdate(publicInstance, callerName) {
   var internalInstance = ReactInstanceMap.get(publicInstance);
   if (!internalInstance) {
@@ -960,11 +1011,10 @@ function enqueueUpdate(component) {
   }
 }
 
-
-
 var ReactDefaultBatchingStrategy = {
+	//初始化为false
   isBatchingUpdates: false,
-
+    //这里的callback就是enqueueUpdate,更新队列
   batchedUpdates: function(callback, a, b, c, d, e) {
     var alreadyBatchingUpdates = ReactDefaultBatchingStrategy.isBatchingUpdates;
 
@@ -973,15 +1023,28 @@ var ReactDefaultBatchingStrategy = {
     if (alreadyBatchingUpdates) {
       return callback(a, b, c, d, e);
     } else {
-		//事物调用
+	  //事物调用
       return transaction.perform(callback, null, a, b, c, d, e);
     }
   },
 };
 ```
 
-
-
+## transaction事物
+---
+先上图
+---
+1.  从流程图上可以看出,每一个method都会被一个wrapper所包裹,通过perform(method)的方式调用,而方法前后分别有initialize,close,和aop类似
+2.  在ReactDefaultBatchingStrategy.batchedUpdates()方法中实际调用的是transaction.perform(enqueueUpdate),
+    但enqueueUpdate方法中仍然存在transaction.perform(enqueueUpdate),会不会造成死循环??
+---
+### 流程这样
+当触发setState时,根据ReactDefaultBatchingStrategy.isBatchingUpdates的值判断
+默认为false,就会执行 batchingStrategy.batchedUpdates(enqueueUpdate, component);
+将ReactDefaultBatchingStrategy.isBatchingUpdates = true;
+然后事物调用transaction.perform(callback, null, a, b, c, d, e);进入enqueueUpdate()
+因为变为了true所以执行dirtyComponents.push(component);
+事物结束isBatchingUpdates设置为false
 
 
 

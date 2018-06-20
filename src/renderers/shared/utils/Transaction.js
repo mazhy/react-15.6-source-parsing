@@ -136,20 +136,11 @@ var TransactionImpl = {
     G,
     T: (a: A, b: B, c: C, d: D, e: E, f: F) => G,
   >(method: T, scope: any, a: A, b: B, c: C, d: D, e: E, f: F): G {
-    /* eslint-enable space-before-function-paren */
-    invariant(
-      !this.isInTransaction(),
-      'Transaction.perform(...): Cannot initialize a transaction when there ' +
-        'is already an outstanding transaction.',
-    );
+
     var errorThrown;
     var ret;
     try {
       this._isInTransaction = true;
-      // Catching errors makes debugging more difficult, so we start with
-      // errorThrown set to true before setting it to false after calling
-      // close -- if it's still set to true in the finally block, it means
-      // one of these calls threw.
       errorThrown = true;
       this.initializeAll(0);
       ret = method.call(scope, a, b, c, d, e, f);
@@ -179,10 +170,6 @@ var TransactionImpl = {
     for (var i = startIndex; i < transactionWrappers.length; i++) {
       var wrapper = transactionWrappers[i];
       try {
-        // Catching errors makes debugging more difficult, so we start with the
-        // OBSERVED_ERROR state before overwriting it with the real return value
-        // of initialize -- if it's still set to OBSERVED_ERROR in the finally
-        // block, it means wrapper.initialize threw.
         this.wrapperInitData[i] = OBSERVED_ERROR;
         this.wrapperInitData[i] = wrapper.initialize
           ? wrapper.initialize.call(this)

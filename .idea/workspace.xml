@@ -28,11 +28,9 @@
       <file leaf-file-name="ReactCompositeComponent.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="443">
-              <caret line="480" column="4" lean-forward="true" selection-start-line="480" selection-start-column="4" selection-end-line="480" selection-end-column="4" />
+            <state relative-caret-position="-72">
+              <caret line="606" column="0" lean-forward="false" selection-start-line="606" selection-start-column="0" selection-end-line="606" selection-end-column="0" />
               <folding>
-                <element signature="e#6912#7063#0" expanded="false" />
-                <element signature="e#7185#7401#0" expanded="false" />
                 <element signature="e#7527#8328#0" expanded="false" />
                 <element signature="e#8437#9431#0" expanded="false" />
                 <element signature="e#9673#10798#0" expanded="false" />
@@ -42,12 +40,9 @@
                 <element signature="e#12898#13184#0" expanded="false" />
                 <element signature="e#13286#13465#0" expanded="false" />
                 <element signature="e#13305#13461#0" expanded="false" />
-                <element signature="e#17046#17721#0" expanded="false" />
-                <element signature="e#18335#19313#0" expanded="false" />
-                <element signature="e#19563#20803#0" expanded="false" />
-                <element signature="e#21754#22565#0" expanded="false" />
-                <element signature="e#22982#23266#0" expanded="false" />
-                <element signature="e#23563#23711#0" expanded="false" />
+                <element signature="e#21194#22005#0" expanded="false" />
+                <element signature="e#22422#22706#0" expanded="false" />
+                <element signature="e#23003#23151#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -56,8 +51,8 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-62">
-              <caret line="943" column="0" lean-forward="false" selection-start-line="943" selection-start-column="0" selection-end-line="943" selection-end-column="0" />
+            <state relative-caret-position="492">
+              <caret line="1046" column="29" lean-forward="true" selection-start-line="1046" selection-start-column="29" selection-end-line="1046" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -66,8 +61,8 @@
       <file leaf-file-name="React.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/isomorphic/React.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="58" column="23" lean-forward="true" selection-start-line="58" selection-start-column="23" selection-end-line="58" selection-end-column="23" />
+            <state relative-caret-position="285">
+              <caret line="61" column="48" lean-forward="true" selection-start-line="61" selection-start-column="48" selection-end-line="61" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -76,18 +71,8 @@
       <file leaf-file-name="ReactBaseClasses.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/isomorphic/modern/class/ReactBaseClasses.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" column="23" lean-forward="true" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReactUpdateQueue.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdateQueue.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1250">
-              <caret line="22" column="20" lean-forward="false" selection-start-line="22" selection-start-column="20" selection-end-line="22" selection-end-column="20" />
+            <state relative-caret-position="171">
+              <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="14" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -96,8 +81,8 @@
       <file leaf-file-name="ReactUpdates.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdates.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="355">
-              <caret line="254" column="20" lean-forward="true" selection-start-line="254" selection-start-column="20" selection-end-line="254" selection-end-column="20" />
+            <state relative-caret-position="280">
+              <caret line="88" column="2" lean-forward="false" selection-start-line="88" selection-start-column="2" selection-end-line="88" selection-end-column="2" />
               <folding />
             </state>
           </provider>
@@ -106,8 +91,18 @@
       <file leaf-file-name="ReactDefaultBatchingStrategy.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactDefaultBatchingStrategy.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="584">
-              <caret line="52" column="58" lean-forward="true" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
+            <state relative-caret-position="613">
+              <caret line="57" column="29" lean-forward="false" selection-start-line="57" selection-start-column="29" selection-end-line="57" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Transaction.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/renderers/shared/utils/Transaction.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="128" column="2" lean-forward="false" selection-start-line="128" selection-start-column="2" selection-end-line="128" selection-end-column="2" />
               <folding />
             </state>
           </provider>
@@ -116,7 +111,7 @@
       <file leaf-file-name="ReactReconciler.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactReconciler.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="867">
+            <state relative-caret-position="696">
               <caret line="196" column="0" lean-forward="true" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
               <folding />
             </state>
@@ -159,12 +154,16 @@
       <find>registrationNameModules</find>
       <find>ReactClass</find>
       <find>nextState</find>
-      <find>createClass</find>
       <find>createClassReactComponent.prototype.setState</find>
       <find>ReactComponent.prototype.setState</find>
       <find>performUpdateIfNecessary</find>
+      <find>createClass</find>
+      <find>_constructComponentWithoutOwner</find>
       <find>ReactDefaultBatchingStrategy</find>
+      <find>enqueueUpdate</find>
+      <find>shouldComponentUpdate</find>
       <find>batchingStrategy</find>
+      <find>_processPendingState</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -183,11 +182,12 @@
         <option value="$PROJECT_DIR$/addons/create-react-class/create-react-class.js" />
         <option value="$PROJECT_DIR$/src/isomorphic/modern/class/ReactBaseClasses.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdateQueue.js" />
-        <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactReconciler.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdates.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactDefaultBatchingStrategy.js" />
+        <option value="$PROJECT_DIR$/src/renderers/shared/utils/Transaction.js" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js" />
       </list>
     </option>
   </component>
@@ -206,10 +206,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="505" />
-    <option name="y" value="14" />
-    <option name="width" value="1940" />
-    <option name="height" value="980" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -364,15 +364,16 @@
       <workItem from="1529397765029" duration="8190000" />
       <workItem from="1529407015704" duration="6042000" />
       <workItem from="1529416448532" duration="595000" />
-      <workItem from="1529458111444" duration="16356000" />
+      <workItem from="1529458111444" duration="21723000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31183000" />
+    <option name="totallyTimeSpent" value="36550000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="505" y="14" width="1940" height="980" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
@@ -381,7 +382,7 @@
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24921136" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24973656" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Grunt " active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -411,13 +412,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/instantiateReactComponent.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1440">
-          <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="88" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/renderers/dom/shared/ReactDOMTextComponent.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3504">
@@ -721,6 +715,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdateQueue.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1250">
+          <caret line="22" column="20" lean-forward="false" selection-start-line="22" selection-start-column="20" selection-end-line="22" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/addons/create-react-class/create-react-class.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-19">
@@ -741,6 +743,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/isomorphic/modern/class/ReactBaseClasses.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="14" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/instantiateReactComponent.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
@@ -751,43 +761,49 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/isomorphic/React.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="58" column="23" lean-forward="true" selection-start-line="58" selection-start-column="23" selection-end-line="58" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/isomorphic/modern/class/ReactBaseClasses.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="19" column="23" lean-forward="true" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdateQueue.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1250">
-          <caret line="22" column="20" lean-forward="false" selection-start-line="22" selection-start-column="20" selection-end-line="22" selection-end-column="20" />
+        <state relative-caret-position="285">
+          <caret line="61" column="48" lean-forward="true" selection-start-line="61" selection-start-column="48" selection-end-line="61" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactReconciler.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="867">
+        <state relative-caret-position="696">
           <caret line="196" column="0" lean-forward="true" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdates.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="88" column="2" lean-forward="false" selection-start-line="88" selection-start-column="2" selection-end-line="88" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactDefaultBatchingStrategy.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="613">
+          <caret line="57" column="29" lean-forward="false" selection-start-line="57" selection-start-column="29" selection-end-line="57" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/renderers/shared/utils/Transaction.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="128" column="2" lean-forward="false" selection-start-line="128" selection-start-column="2" selection-end-line="128" selection-end-column="2" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="443">
-          <caret line="480" column="4" lean-forward="true" selection-start-line="480" selection-start-column="4" selection-end-line="480" selection-end-column="4" />
+        <state relative-caret-position="-72">
+          <caret line="606" column="0" lean-forward="false" selection-start-line="606" selection-start-column="0" selection-end-line="606" selection-end-column="0" />
           <folding>
-            <element signature="e#6912#7063#0" expanded="false" />
-            <element signature="e#7185#7401#0" expanded="false" />
             <element signature="e#7527#8328#0" expanded="false" />
             <element signature="e#8437#9431#0" expanded="false" />
             <element signature="e#9673#10798#0" expanded="false" />
@@ -797,36 +813,17 @@
             <element signature="e#12898#13184#0" expanded="false" />
             <element signature="e#13286#13465#0" expanded="false" />
             <element signature="e#13305#13461#0" expanded="false" />
-            <element signature="e#17046#17721#0" expanded="false" />
-            <element signature="e#18335#19313#0" expanded="false" />
-            <element signature="e#19563#20803#0" expanded="false" />
-            <element signature="e#21754#22565#0" expanded="false" />
-            <element signature="e#22982#23266#0" expanded="false" />
-            <element signature="e#23563#23711#0" expanded="false" />
+            <element signature="e#21194#22005#0" expanded="false" />
+            <element signature="e#22422#22706#0" expanded="false" />
+            <element signature="e#23003#23151#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdates.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="254" column="20" lean-forward="true" selection-start-line="254" selection-start-column="20" selection-end-line="254" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactDefaultBatchingStrategy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="584">
-          <caret line="52" column="58" lean-forward="true" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-62">
-          <caret line="943" column="0" lean-forward="false" selection-start-line="943" selection-start-column="0" selection-end-line="943" selection-end-column="0" />
+        <state relative-caret-position="492">
+          <caret line="1046" column="29" lean-forward="true" selection-start-line="1046" selection-start-column="29" selection-end-line="1046" selection-end-column="29" />
           <folding />
         </state>
       </provider>

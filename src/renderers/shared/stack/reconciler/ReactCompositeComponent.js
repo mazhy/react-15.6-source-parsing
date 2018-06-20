@@ -548,15 +548,15 @@ var ReactCompositeComponent = {
     var replace = this._pendingReplaceState;
     this._pendingReplaceState = false;
     this._pendingStateQueue = null;
-
+    //如果队列为null,返回原state
     if (!queue) {
       return inst.state;
     }
-
+    //如果队列中有一个更新就返回这个更新值
     if (replace && queue.length === 1) {
       return queue[0];
     }
-
+    //如果队列中有多个更新,就将他们合并
     var nextState = Object.assign({}, replace ? queue[0] : inst.state);
     for (var i = replace ? 1 : 0; i < queue.length; i++) {
       var partial = queue[i];
@@ -571,18 +571,6 @@ var ReactCompositeComponent = {
     return nextState;
   },
 
-  /**
-   * Merges new props and state, notifies delegate methods of update and
-   * performs update.
-   *
-   * @param {ReactElement} nextElement Next element
-   * @param {object} nextProps Next public object to set as properties.
-   * @param {?object} nextState Next object to set as state.
-   * @param {?object} nextContext Next public object to set as context.
-   * @param {ReactReconcileTransaction} transaction
-   * @param {?object} unmaskedContext
-   * @private
-   */
   /**
    * 当组件需要更新时,调用
    */
@@ -616,12 +604,6 @@ var ReactCompositeComponent = {
     }
   },
 
-  /**
-   * Call the component's `render` method and update the DOM accordingly.
-   *
-   * @param {ReactReconcileTransaction} transaction
-   * @internal
-   */
   /**
    * 调用render渲染组件
    */
