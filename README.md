@@ -1,6 +1,6 @@
 
 ---
-    [setState执行过程](https://github.com/mazhy/react-15.6-source-parsing/blob/master/doc/setState%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.md).
+    [setState执行过程](https://github.com/mazhy/react-15.6-source-parsing/blob/master/doc/setState%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.md)
 ---
 ---
 # 渲染流程
