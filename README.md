@@ -1,8 +1,7 @@
 
----
+
     [setState执行过程](https://juejin.im/post/5b2b948af265da59615c0392)
----
----
+
 # 渲染流程
 ## 1.jsx创建的虚拟元素会被编译成React的createElement方法
 ```javascript
