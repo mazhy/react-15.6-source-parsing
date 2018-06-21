@@ -53,20 +53,13 @@ class CallbackQueue<T> {
   }
 
   /**
-   * Invokes all enqueued callbacks and clears the queue. This is invoked after
-   * the DOM representation of a component has been created or updated.
-   *
-   * @internal
+   * 执行回调函数
    */
   notifyAll() {
     var callbacks = this._callbacks;
     var contexts = this._contexts;
     var arg = this._arg;
     if (callbacks && contexts) {
-      invariant(
-        callbacks.length === contexts.length,
-        'Mismatched list of contexts in callback queue',
-      );
       this._callbacks = null;
       this._contexts = null;
       for (var i = 0; i < callbacks.length; i++) {

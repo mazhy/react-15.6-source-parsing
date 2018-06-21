@@ -1,56 +1,74 @@
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule ReactDefaultBatchingStrategy
+ * 解析:
+ *    如果isBatchingUpdates为true,则对所有队列中的更新执行batchedUpdates方法
+ *    否则只把当前组件放入dirtyComponents中
  */
-
-'use strict';
-
-var ReactUpdates = require('ReactUpdates');
-var Transaction = require('Transaction');
-
-var emptyFunction = require('emptyFunction');
-
 
 /**
  * RESET_BATCHED_UPDATES,FLUSH_BATCHED_UPDATES 定义了两个wrapper
  * RESET_BATCHED_UPDATES 负责在close阶段重置 ReactDefaultBatchingStrategy.isBatchingUpdates = false;
  */
 var RESET_BATCHED_UPDATES = {
-  initialize: emptyFunction,
-  close: function() {
-    ReactDefaultBatchingStrategy.isBatchingUpdates = false;
-  },
+    initialize: emptyFunction,
+    close: function() {
+        ReactDefaultBatchingStrategy.isBatchingUpdates = false;
+    },
 };
 /**
  * 负责在close阶段 执行ReactUpdates.flushBatchedUpdates.bind(ReactUpdates),
  */
 var FLUSH_BATCHED_UPDATES = {
-  initialize: emptyFunction,
-  close: ReactUpdates.flushBatchedUpdates.bind(ReactUpdates),
+    initialize: emptyFunction,
+    close: ReactUpdates.flushBatchedUpdates.bind(ReactUpdates),
 };
 
 var TRANSACTION_WRAPPERS = [FLUSH_BATCHED_UPDATES, RESET_BATCHED_UPDATES];
 
 function ReactDefaultBatchingStrategyTransaction() {
-  this.reinitializeTransaction();
+    this.reinitializeTransaction();
 }
-/**
- *  把wrapper绑定到ReactDefaultBatchingStrategyTransaction的原型上
- */
+
+//将 wrapper绑定到ReactDefaultBatchingStrategyTransaction的原型上
 Object.assign(ReactDefaultBatchingStrategyTransaction.prototype, Transaction, {
-  getTransactionWrappers: function() {
-    return TRANSACTION_WRAPPERS;
-  },
+    getTransactionWrappers: function() {
+        return TRANSACTION_WRAPPERS;
+    },
 });
 
-var transaction = new ReactDefaultBatchingStrategyTransaction();
 
+var transaction = new ReactDefaultBatchingStrategyTransaction();
+var updateBatchNumber = 0;
+var dirtyComponents = [];
+var batchingStrategy = null;
+
+
+/**
+ * 调用enqueueUpdate()
+ *     1. batchingStrategy.isBatchingUpdates == true  就是开启批量更新模式,所以会加到数组中  dirtyComponents.push(component);
+ *     2. batchingStrategy.isBatchingUpdates == false 就是关闭批量更新模式,所以会执行batchingStrategy.batchedUpdates(enqueueUpdate, component);
+ *
+ *  问题
+ *      1. batchingStrategy.batchedUpdates(enqueueUpdate, component); 做了些什么???
+ *      2. dirtyComponents 最后经历了什么???
+ *
+ *  问题一
+ *      调用batchingStrategy.batchedUpdates()
+ *      参数解析enqueueUpdate, component
+ *      实际调用了ReactDefaultBatchingStrategy对象的batchedUpdates()方法
+ *
+ */
+function enqueueUpdate(component) {
+    //如果不处于批量更新模式
+    if (!batchingStrategy.isBatchingUpdates) {
+        batchingStrategy.batchedUpdates(enqueueUpdate, component);
+        return;
+    }
+    //如果处于批量更新模式,则将该组件保存在dirtyComponents数组中
+    dirtyComponents.push(component);
+    if (component._updateBatchNumber == null) {
+        component._updateBatchNumber = updateBatchNumber + 1;
+    }
+}
 
 
 var ReactDefaultBatchingStrategy = {
@@ -88,4 +106,5 @@ var ReactDefaultBatchingStrategy = {
     },
 };
 
-module.exports = ReactDefaultBatchingStrategy;
+
+

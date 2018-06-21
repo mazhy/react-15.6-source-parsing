@@ -84,26 +84,21 @@ var ReactUpdateQueue = {
   },
 
   /**
-   * Enqueue a callback that will be executed after all the pending updates
-   * have processed.
-   *
-   * @param {ReactClass} publicInstance The instance to use as `this` context.
-   * @param {?function} callback Called after state is updated.
-   * @param {string} callerName Name of the calling function in the public API.
-   * @internal
+   * 跟enqueueSetState 类似
+   * 执行这个方法最主要的就是将回调函数绑定到了internalInstance._pendingCallbacks上
    */
   enqueueCallback: function(publicInstance, callback, callerName) {
-    ReactUpdateQueue.validateCallback(callback, callerName);
     var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
     if (!internalInstance) {
       return null;
     }
-
+    //就是初始化_pendingCallbacks
     if (internalInstance._pendingCallbacks) {
       internalInstance._pendingCallbacks.push(callback);
     } else {
       internalInstance._pendingCallbacks = [callback];
     }
+
     enqueueUpdate(internalInstance);
   },
 
@@ -192,12 +187,14 @@ var ReactUpdateQueue = {
    * @internal
    */
   enqueueSetState: function(publicInstance, partialState) {
+      //获取当前实例
+      //实例中有两个非常重要的属性
+      //_pendingStateQueue(待更新队列) 与 _pendingCallbacks(更新回调队列)
     var internalInstance = getInternalInstanceReadyForUpdate( publicInstance, 'setState',  );
-
     if (!internalInstance) {
       return;
     }
-    //更新队列合并操作
+    //初始化待更新队列
     var queue = internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = []);
     queue.push(partialState);
     enqueueUpdate(internalInstance);

@@ -40,11 +40,6 @@ var NESTED_UPDATES = {
   },
   close: function() {
     if (this.dirtyComponentsLength !== dirtyComponents.length) {
-      // Additional updates were enqueued by componentDidUpdate handlers or
-      // similar; before our own UPDATE_QUEUEING wrapper closes, we want to run
-      // these new updates so that if A's componentDidUpdate calls setState on
-      // B, B will update before the callback A's updater provided when calling
-      // setState.
       dirtyComponents.splice(0, this.dirtyComponentsLength);
       flushBatchedUpdates();
     } else {
@@ -107,67 +102,33 @@ function batchedUpdates(callback, a, b, c, d, e) {
   return batchingStrategy.batchedUpdates(callback, a, b, c, d, e);
 }
 
-/**
- * Array comparator for ReactComponents by mount ordering.
- *
- * @param {ReactComponent} c1 first component you're comparing
- * @param {ReactComponent} c2 second component you're comparing
- * @return {number} Return value usable by Array.prototype.sort().
- */
 function mountOrderComparator(c1, c2) {
   return c1._mountOrder - c2._mountOrder;
 }
 
+/**
+ * 根据名称就知道这个方法是执行批量更新
+ */
 function runBatchedUpdates(transaction) {
   var len = transaction.dirtyComponentsLength;
-  invariant(
-    len === dirtyComponents.length,
-    "Expected flush transaction's stored dirty-components length (%s) to " +
-      'match dirty-components array length (%s).',
-    len,
-    dirtyComponents.length,
-  );
-
-  // Since reconciling a component higher in the owner hierarchy usually (not
-  // always -- see shouldComponentUpdate()) will reconcile children, reconcile
-  // them before their children by sorting the array.
-  dirtyComponents.sort(mountOrderComparator);
-
-  // Any updates enqueued while reconciling must be performed after this entire
-  // batch. Otherwise, if dirtyComponents is [A, B] where A has children B and
-  // C, B could update twice in a single batch if C's render enqueues an update
-  // to B (since B would have already updated, we should skip it, and the only
-  // way we can know to do so is by checking the batch counter).
+  dirtyComponents.sort(mountOrderComparator);//排序
   updateBatchNumber++;
-
   for (var i = 0; i < len; i++) {
-    // If a component is unmounted before pending changes apply, it will still
-    // be here, but we assume that it has cleared its _pendingCallbacks and
-    // that performUpdateIfNecessary is a noop.
     var component = dirtyComponents[i];
-
-    // If performUpdateIfNecessary happens to enqueue any new updates, we
-    // shouldn't execute the callbacks until the next render happens, so
-    // stash the callbacks first
     var callbacks = component._pendingCallbacks;
     component._pendingCallbacks = null;
 
     var markerName;
     if (ReactFeatureFlags.logTopLevelRenders) {
       var namedComponent = component;
-      // Duck type TopLevelWrapper. This is probably always true.
       if (component._currentElement.type.isReactTopLevelWrapper) {
         namedComponent = component._renderedComponent;
       }
       markerName = 'React update: ' + namedComponent.getName();
       console.time(markerName);
     }
-
-    ReactReconciler.performUpdateIfNecessary(
-      component,
-      transaction.reconcileTransaction,
-      updateBatchNumber,
-    );
+    //经过一些列处理 其实就是调用了component.performUpdateIfNecessary,也就是自定义组件ReactCompositeComponent.performUpdateIfNecessary()
+    ReactReconciler.performUpdateIfNecessary( component, transaction.reconcileTransaction, updateBatchNumber, );
 
     if (markerName) {
       console.timeEnd(markerName);
@@ -175,53 +136,64 @@ function runBatchedUpdates(transaction) {
 
     if (callbacks) {
       for (var j = 0; j < callbacks.length; j++) {
-        transaction.callbackQueue.enqueue(
-          callbacks[j],
-          component.getPublicInstance(),
-        );
+        transaction.callbackQueue.enqueue( callbacks[j], component.getPublicInstance());
       }
     }
   }
 }
 
+/**
+ *  该方法用于迭代dirtyComponents
+ */
 var flushBatchedUpdates = function() {
-  // ReactUpdatesFlushTransaction's wrappers will clear the dirtyComponents
-  // array and perform any updates enqueued by mount-ready handlers (i.e.,
-  // componentDidUpdate) but we need to check here too in order to catch
-  // updates enqueued by setState callbacks and asap calls.
-  while (dirtyComponents.length || asapEnqueued) {
-    if (dirtyComponents.length) {
-      var transaction = ReactUpdatesFlushTransaction.getPooled();
-      transaction.perform(runBatchedUpdates, null, transaction);
-      ReactUpdatesFlushTransaction.release(transaction);
-    }
+    while (dirtyComponents.length || asapEnqueued) {
+        if (dirtyComponents.length) {
+            var transaction = ReactUpdatesFlushTransaction.getPooled();
+            //又以事物的形式调用了 runBatchedUpdates()
+            transaction.perform(runBatchedUpdates, null, transaction);
+            //释放实例
+            ReactUpdatesFlushTransaction.release(transaction);
+        }
 
-    if (asapEnqueued) {
-      asapEnqueued = false;
-      var queue = asapCallbackQueue;
-      asapCallbackQueue = CallbackQueue.getPooled();
-      queue.notifyAll();
-      CallbackQueue.release(queue);
+        if (asapEnqueued) {
+            asapEnqueued = false;
+            var queue = asapCallbackQueue;
+            asapCallbackQueue = CallbackQueue.getPooled();
+            queue.notifyAll();
+            CallbackQueue.release(queue);
+        }
     }
-  }
 };
 
 /**
  * 解析:
  *    如果isBatchingUpdates为true,则对所有队列中的更新执行batchedUpdates方法
  *    否则只把当前组件放入dirtyComponents中
+ * 调用enqueueUpdate()
+ *     1. batchingStrategy.isBatchingUpdates == true  就是开启批量更新模式,所以会加到数组中  dirtyComponents.push(component);
+ *     2. batchingStrategy.isBatchingUpdates == false 就是关闭批量更新模式,所以会执行batchingStrategy.batchedUpdates(enqueueUpdate, component);
+ *
+ *  问题
+ *      1. batchingStrategy.batchedUpdates(enqueueUpdate, component); 做了些什么???
+ *      2. dirtyComponents 最后经历了什么???
+ *
+ *  问题一
+ *      调用batchingStrategy.batchedUpdates()
+ *      参数解析enqueueUpdate, component
+ *      实际调用了ReactDefaultBatchingStrategy对象的batchedUpdates()方法
+ *
  */
 function enqueueUpdate(component) {
-  //如果不处于批量更新模式
-  if (!batchingStrategy.isBatchingUpdates) {
-    batchingStrategy.batchedUpdates(enqueueUpdate, component);
-    return;
-  }
-  //如果处于批量更新模式,则将该组件保存在dirtyComponents数组中
-  dirtyComponents.push(component);
-  if (component._updateBatchNumber == null) {
-    component._updateBatchNumber = updateBatchNumber + 1;
-  }
+    //如果不处于批量更新模式
+    if (!batchingStrategy.isBatchingUpdates) {
+        batchingStrategy.batchedUpdates(enqueueUpdate, component);
+        return;
+    }
+    //如果处于批量更新模式,则将该组件保存在dirtyComponents数组中
+    dirtyComponents.push(component);
+    if (component._updateBatchNumber == null) {
+        component._updateBatchNumber = updateBatchNumber + 1;
+    }
 }
 
 /**

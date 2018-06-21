@@ -181,11 +181,7 @@ var ReactReconciler = {
    * @param {ReactReconcileTransaction} transaction
    * @internal
    */
-  performUpdateIfNecessary: function(
-    internalInstance,
-    transaction,
-    updateBatchNumber,
-  ) {
+  performUpdateIfNecessary: function(internalInstance,transaction,updateBatchNumber,) {
     if (internalInstance._updateBatchNumber !== updateBatchNumber) {
       return;
     }
