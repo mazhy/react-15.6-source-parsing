@@ -58,20 +58,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="755">
-              <caret line="998" column="31" lean-forward="false" selection-start-line="998" selection-start-column="31" selection-end-line="998" selection-end-column="31" />
+            <state relative-caret-position="38">
+              <caret line="2" column="133" lean-forward="false" selection-start-line="2" selection-start-column="133" selection-end-line="2" selection-end-column="133" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="setState执行流程.md" pinned="false" current-in-tab="true">
+      <file leaf-file-name="setState执行流程.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/doc/setState执行流程.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="603">
+            <state relative-caret-position="8683">
               <caret line="457" column="29" lean-forward="true" selection-start-line="457" selection-start-column="29" selection-end-line="457" selection-end-column="29" />
               <folding />
             </state>
@@ -184,7 +184,6 @@
         <option value="$PROJECT_DIR$/src/isomorphic/modern/class/ReactBaseClasses.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/utils/Transaction.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/index.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactDefaultBatchingStrategy.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactReconciler.js" />
@@ -192,6 +191,7 @@
         <option value="$PROJECT_DIR$/src/renderers/shared/stack/reconciler/ReactUpdates.js" />
         <option value="$PROJECT_DIR$/src/renderers/shared/utils/CallbackQueue.js" />
         <option value="$PROJECT_DIR$/doc/setState执行流程.md" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -386,12 +386,12 @@
       <workItem from="1529407015704" duration="6042000" />
       <workItem from="1529416448532" duration="595000" />
       <workItem from="1529458111444" duration="24658000" />
-      <workItem from="1529546990117" duration="9471000" />
+      <workItem from="1529546990117" duration="9709000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48956000" />
+    <option name="totallyTimeSpent" value="49194000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -818,18 +818,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
+    <entry file="file://$PROJECT_DIR$/doc/setState执行流程.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="755">
-          <caret line="998" column="31" lean-forward="false" selection-start-line="998" selection-start-column="31" selection-end-line="998" selection-end-column="31" />
+        <state relative-caret-position="8683">
+          <caret line="457" column="29" lean-forward="true" selection-start-line="457" selection-start-column="29" selection-end-line="457" selection-end-column="29" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/doc/setState执行流程.md">
+    <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="603">
-          <caret line="457" column="29" lean-forward="true" selection-start-line="457" selection-start-column="29" selection-end-line="457" selection-end-column="29" />
+        <state relative-caret-position="38">
+          <caret line="2" column="133" lean-forward="false" selection-start-line="2" selection-start-column="133" selection-end-line="2" selection-end-column="133" />
           <folding />
         </state>
       </provider>

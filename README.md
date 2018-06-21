@@ -1,12 +1,8 @@
-1.ReactDOM.render 开始要渲染组件
-2.如果执行更新组件
-3.创建组件,根据参数,看创建什么类型的组件并返回
-4.根据当前的批处理策略进行更新处理
-5.通过setInnerHTML方式将html加入到dom中
 
-
-生命周期只存在于自定义组件中
-
+---
+    [setState执行过程](https://github.com/mazhy/react-15.6-source-parsing/blob/master/doc/setState%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.md)
+---
+---
 # 渲染流程
 ## 1.jsx创建的虚拟元素会被编译成React的createElement方法
 ```javascript
